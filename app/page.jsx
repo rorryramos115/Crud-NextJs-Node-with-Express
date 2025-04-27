@@ -4,15 +4,32 @@ import Button from "@/components/Button";
 import From from "@/components/From";
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getUsers, createUser } from "@/libs/api";
 
 const Page = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLaoding] = useState(false);
-  const [users, setUsers] = useState([
-    {user_id: 1, firstname: "Rorry", lastname: "Ramos", email: "Rorryramos@gmail.com"}
-  ]);
+  const [error, setError] = useState("");
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setIsLaoding(true);
+        const data = await getUsers();
+        console.log("retrieve all users: ", data);
+        setUsers(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLaoding(false);
+      }
+    }
+
+    fetchUsers();
+  }, [])
 
   const handleCloseModal = () => {
     setCurrentUser(null)
@@ -24,17 +41,18 @@ const Page = () => {
     setIsOpenModal(true);
   }
 
-  const handleSubmit = (userData) => {
+  const handleSubmit = async (userData) => {
     if(currentUser) {
       setUsers(users.map(user => 
         user.user_id === currentUser.user_id ? {...user, ...userData} : user,
       ))
     } else {
-      const newUser = {
-        user_id: users.length > 0 ? Math.max(...users.map(u => u.user_id)) + 1 : 1,
-        ...userData
-      }
-      setUsers([...users, newUser])
+      createUser(userData);
+      // const newUser = {
+      //   user_id: users.length > 0 ? Math.max(...users.map(u => u.user_id)) + 1 : 1,
+      //   ...userData
+      // }
+      // setUsers([...users, newUser])
     }
     handleCloseModal();
   }
