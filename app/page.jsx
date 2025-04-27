@@ -5,7 +5,7 @@ import From from "@/components/From";
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
 import { useEffect, useState } from "react";
-import { getUsers, createUser } from "@/libs/api";
+import { getUsers, createUser, updateUser, deleteUser } from "@/libs/api";
 
 const Page = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -43,9 +43,12 @@ const Page = () => {
 
   const handleSubmit = async (userData) => {
     if(currentUser) {
-      setUsers(users.map(user => 
-        user.user_id === currentUser.user_id ? {...user, ...userData} : user,
-      ))
+      const updatedData = {...userData, _id: currentUser._id};
+
+      updateUser(updatedData);
+      // setUsers(users.map(user => 
+      //   user.user_id === currentUser.user_id ? {...user, ...userData} : user,
+      // ))
     } else {
       createUser(userData);
       // const newUser = {
@@ -57,15 +60,24 @@ const Page = () => {
     handleCloseModal();
   }
 
-  const handleDelete = (user_id) => {
-    setUsers(users.filter(user => user.user_id !== user_id));
+  const handleDelete = async (_id) => {
+    try {
+      setIsLaoding(true);
+      await deleteUser(_id);
+
+      setUsers(users.filter(user => user._id !== _id));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLaoding(false);
+    }
   }
 
 
   return (
    <div className="w-full flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
       <h1 className='text-center font-bold text-5xl text-white mb-10'>Crud Next Js/Node with Express</h1>
-      <div className="w-full max-w-4xl bg-gray-200 p-8 rounded-lg">
+      <div className="w-full max-w-5xl bg-gray-200 p-8 rounded-lg">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
 

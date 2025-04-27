@@ -6,6 +6,7 @@ const Table = ({ users, onEdit, onDelete, isLoading}) => {
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -21,7 +22,8 @@ const Table = ({ users, onEdit, onDelete, isLoading}) => {
             </tr>
           ) : (
             users.map((user, index) => (
-              <tr key={user.user_id || `fallback-${index}`}>
+              <tr key={user._id || `fallback-${index}`}>
+                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user._id}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.firstname}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.lastname}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
@@ -37,7 +39,7 @@ const Table = ({ users, onEdit, onDelete, isLoading}) => {
                   <Button 
                     size="sm" 
                     variant="danger" 
-                    onClick={() => onDelete(user.user_id)}
+                    onClick={() => onDelete(user._id)}
                     disabled={isLoading}
                   >
                     Delete
